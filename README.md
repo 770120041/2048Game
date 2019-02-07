@@ -5,6 +5,7 @@ It is just a implementation with pygame<br>
 <br>
 ## Usage
 Dependency: pygame, numpy<br>
+Install requirement```pip install -r requirements.txt ``` <br>
 Just run ```python game_board.py``` to run the game
 
 ## Description
