@@ -13,7 +13,6 @@ def new_game(grid_num):
     return grid
 
 def add_two_to_grid(grid):
-
     if min(list(map(min, zip(*grid))))> 0:
         print("Board is full after this op!")
         return grid
@@ -53,7 +52,7 @@ def update_grid_line(grid_line):
 
 def update_grid(grid,key_pressed):
     score_got = 0
-    print(grid)
+    # print(grid)
     if key_pressed == "right":
         for i in range(len(grid)):
             grid[i], score_line = update_grid_line(grid[i])
@@ -84,4 +83,24 @@ def update_grid(grid,key_pressed):
     return grid, score_got
 
 def game_state(grid):
-    pass
+    # winning situation
+    if max(list(map(max, zip(*grid)))) == 2048:
+        print("Got 2048, Won!")
+        return "win"
+
+    # now checking for lose situation
+    # if the grid is not full, then not lose
+    if min(list(map(min,zip(*grid)))) == 0:
+        return
+
+    # dfs to check if there are adjacent equal number
+    # if so, not lost
+    for x in range(len(grid)):
+        for y in range(len(grid)):
+            if x != len(grid)-1 and grid[x][y] == grid[x+1][y]:
+                return
+            if y != len(grid)-1 and grid[x][y] == grid[x][y+1]:
+                return
+
+    print(" no way to go, lost this game")
+    return "lose"

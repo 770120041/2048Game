@@ -1,4 +1,5 @@
 import pygame
+import time
 import game_logic
 
 class game_2048:
@@ -35,12 +36,14 @@ class game_2048:
         self._display_surf = pygame.display.set_mode(self._size, pygame.HWSURFACE | pygame.DOUBLEBUF)
         self._running = True
         # self.__grid = [[16 for x in range(self.GRID_NUM)] for y in range(self.GRID_NUM)]
-        self.score = 0
         self.is_new_game = True
 
     # init the grid at first running
     def __init_grid(self):
         self.is_new_game = False
+        self.score = 0
+        self.move = 0
+        self.cur_game_state = "OK"
         self.grid = game_logic.new_game(self.GRID_NUM)
 
     def on_event(self, event):
@@ -57,12 +60,16 @@ class game_2048:
                 key_pressed = "left"
             elif event.key == pygame.K_RIGHT:
                 key_pressed = "right"
+            # start a new game
+            elif event.key == pygame.K_r:
+                self.is_new_game = True
             elif event.key == pygame.K_ESCAPE:
                 self._running = False
                 return
         # TODO: update score content
         if key_pressed != "":
-            self.grid,score_got = game_logic.update_grid(self.grid, key_pressed)
+            self.move += 1
+            self.grid, score_got = game_logic.update_grid(self.grid, key_pressed)
             self.score += score_got
 
 
@@ -78,6 +85,8 @@ class game_2048:
         font = pygame.font.Font(None, 30)
         scoretext = font.render("Score:" + str(self.score), 1, (255, 255, 255))
         self._display_surf.blit(scoretext, (10, 20))
+        scoretext = font.render("Move:" + str(self.move), 1, (255, 255, 255))
+        self._display_surf.blit(scoretext, (250, 20))
 
         # rendering grid
         for row in range(self.GRID_NUM):
@@ -85,7 +94,7 @@ class game_2048:
                 # render grid background
                 grid_value = self.grid[col][row]
                 grid_row_pos = self.GRID_PADDING + row*(self.WINDOW_WIDTH/self.GRID_NUM)
-                grid_col_pos =  self.SCORE_WIDTH+self.GRID_PADDING + col*(self.WINDOW_WIDTH/self.GRID_NUM)
+                grid_col_pos = self.SCORE_WIDTH+self.GRID_PADDING + col*(self.WINDOW_WIDTH/self.GRID_NUM)
                 grid_rect_width = (self.WINDOW_WIDTH/self.GRID_NUM)- 2 * self.GRID_PADDING
                 pygame.draw.rect(self._display_surf,
                                  self.__rgb_to_hext(self.BACKGROUND_COLOR_DICT[grid_value]),
@@ -97,15 +106,31 @@ class game_2048:
 
                 self._display_surf.blit(grid_text,text_rect )
 
-
+        font = pygame.font.Font(None, 100)
         if game_logic.game_state(self.grid) == 'win':
-           pass
-        if game_logic.game_state(self.grid) == 'lose':
-           pass
+            win_text = font.render("You Win!", 1, (255, 255, 255))
+            text_rect = win_text.get_rect(
+                center=(self.WINDOW_HEIGHT / 2, self.WINDOW_WIDTH/2))
+
+            self._display_surf.blit(win_text, text_rect)
+            self.cur_game_state="end"
+
+        elif game_logic.game_state(self.grid) == 'lose':
+            lose_text = font.render("You Lose!", 1, (0, 0, 0))
+            text_rect = lose_text.get_rect(
+                center=(self.WINDOW_HEIGHT / 2, self.WINDOW_WIDTH / 2))
+            self._display_surf.blit(lose_text, text_rect)
+            self.cur_game_state = "end"
+
+        if self.cur_game_state == "end":
+            font = pygame.font.Font(None, 50)
+            restart_text = font.render("Press R to Restart", 1, (0, 0, 0))
+            text_rect = restart_text.get_rect(
+                center=(self.WINDOW_HEIGHT / 2, 150))
+            self._display_surf.blit(restart_text, text_rect)
+
         pygame.display.update()
 
-    def on_render(self):
-        pass
 
     def on_cleanup(self):
         pygame.quit()
@@ -119,8 +144,8 @@ class game_2048:
                 self.__init_grid()
             for event in pygame.event.get():
                 self.on_event(event)
-            self.on_loop()
-            self.on_render()
+            if self.cur_game_state != "end":
+                self.on_loop()
         self.on_cleanup()
 
 
