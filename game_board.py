@@ -41,9 +41,10 @@ class game_2048:
     # init the grid at first running
     def __init_grid(self):
         self.is_new_game = False
-        self.grid =  game_logic.new_game(self.GRID_NUM)
+        self.grid = game_logic.new_game(self.GRID_NUM)
 
-    def on_event(self,event):
+    def on_event(self, event):
+        key_pressed = ""
         if event.type == pygame.QUIT:
             self._running = False
             return
@@ -60,7 +61,9 @@ class game_2048:
                 self._running = False
                 return
         # TODO: update score content
-        self.grid = game_logic.update_grid(self.grid,key_pressed)
+        if key_pressed != "":
+            self.grid,score_got = game_logic.update_grid(self.grid, key_pressed)
+            self.score += score_got
 
 
     #TODO  show result text of the whole game
@@ -80,7 +83,7 @@ class game_2048:
         for row in range(self.GRID_NUM):
             for col in range(self.GRID_NUM):
                 # render grid background
-                grid_value = self.grid[row][col]
+                grid_value = self.grid[col][row]
                 grid_row_pos = self.GRID_PADDING + row*(self.WINDOW_WIDTH/self.GRID_NUM)
                 grid_col_pos =  self.SCORE_WIDTH+self.GRID_PADDING + col*(self.WINDOW_WIDTH/self.GRID_NUM)
                 grid_rect_width = (self.WINDOW_WIDTH/self.GRID_NUM)- 2 * self.GRID_PADDING
