@@ -13,5 +13,6 @@ Press "r" to restart<br>
 ![lost](images/2.png)
 <br>
 Used pygame to create the board, and including a simple game_logic file to detect the game state(weather we have lost the game or not)
-and a simple board to vistualize the game.
+and a simple board to vistualize the game. <br>
+Scores are calculated by the eliminated blocks, and moves stands for the moves currently
 
